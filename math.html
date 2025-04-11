@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>数学挑战题</title>
+  <style>
+    body {
+      font-family: "微软雅黑", sans-serif;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      text-align: center;
+      color: #222;
+    }
+
+    .question {
+      margin-bottom: 20px;
+    }
+
+    .question p {
+      font-weight: bold;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .btns {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #4caf50;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #388e3c;
+    }
+
+    .timer {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: red;
+    }
+
+    .result {
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>数学挑战题</h1>
+    <div class="timer">剩余时间：<span id="time">10:00</span></div>
+
+    <form id="quizForm"></form>
+
+    <div class="btns">
+      <button onclick="location.reload()">重新开始</button>
+      <button onclick="goHome()">返回主页</button>
+      <button onclick="submitQuiz()">提交</button>
+    </div>
+
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    const questions = [
+      { q: "1. 计算：√49 × 3 =", answer: "21", score: 10 },
+      { q: "2. 若 x² = 81，则 x 的值为？（填写正数）", answer: "9", score: 10 },
+      { q: "3. 一个圆的半径为7cm，面积是多少？（用π表示）", answer: "49π", score: 15 },
+      { q: "4. 展开 (x+2)(x+3) 的结果是？", answer: "x²+5x+6", score: 15 },
+      { q: "5. 一列数列：1，4，9，16，25，… 的第10项是？", answer: "100", score: 10 },
+      { q: "6. 解方程：2x - 5 = 11", answer: "8", score: 10 },
+      { q: "7. 函数 y = 2x + 1 中，当 x = -3 时，y = ?", answer: "-5", score: 10 },
+      { q: "8. 一个梯形上底6cm，下底10cm，高4cm，面积是多少？", answer: "32", score: 15 },
+      { q: "9. 一个等边三角形的一个内角是多少度？", answer: "60", score: 10 },
+      { q: "10. 二次函数 y = x² - 4x + 4 的顶点是？", answer: "(2,0)", score: 20 },
+      { q: "11. 3的5次方等于？", answer: "243", score: 10 },
+      { q: "12. 已知圆的周长为 2πr，若 r=5，求周长。", answer: "10π", score: 10 },
+      { q: "13. 解不等式：3x - 2 > 7", answer: "x>3", score: 15 },
+      { q: "14. 把7:2化为最简整数比", answer: "7:2", score: 10 },
+      { q: "15. -2的平方是？", answer: "4", score: 10 },
+      { q: "16. 如果一个角是直角，它是多少度？", answer: "90", score: 10 },
+      { q: "17. 若一个长方形面积为36，长为9，宽是多少？", answer: "4", score: 10 },
+      { q: "18. 一个梯形两个底分别是a和b，高是h，面积是多少？", answer: "(a+b)h/2", score: 20 },
+      { q: "19. 函数 y = -x² 图像开口方向？", answer: "向下", score: 10 },
+      { q: "20. 平行四边形的面积公式？", answer: "底×高", score: 10 },
+      { q: "21. 解：|x - 3| = 5", answer: "8或-2", score: 20 },
+      { q: "22. 正方形的对角线公式？", answer: "√2×边长", score: 15 },
+      { q: "23. 若直角三角形两边长3,4，求斜边？", answer: "5", score: 10 },
+      { q: "24. 某数乘以0仍等于？", answer: "0", score: 10 },
+      { q: "25. 若一个圆的面积为100π，半径为？", answer: "10", score: 15 },
+      { q: "26. 一个数平方后是121，它是什么？", answer: "11", score: 10 },
+      { q: "27. 比例尺是1:100000，1cm表示实地多少米？", answer: "1000", score: 15 },
+      { q: "28. 一年有多少天？", answer: "365", score: 10 },
+      { q: "29. -1的3次方是？", answer: "-1", score: 10 },
+      { q: "30. 角度60°是多少弧度？", answer: "π/3", score: 20 }
+    ];
+
+    const quizForm = document.getElementById("quizForm");
+    const resultDiv = document.getElementById("result");
+    const timeDisplay = document.getElementById("time");
+
+    let selected = [];
+    let totalScore = 0;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function loadQuiz() {
+      selected = shuffle([...questions]).slice(0, 10);
+      selected.forEach((q, i) => {
+        const div = document.createElement("div");
+        div.className = "question";
+        div.innerHTML = `
+          <p>${i + 1}. ${q.q}（${q.score}分）</p >
+          <input type="text" id="q${i}">
+        `;
+        quizForm.appendChild(div);
+      });
+    }
+
+    function submitQuiz() {
+      let score = 0;
+      selected.forEach((q, i) => {
+        const userAns = document.getElementById(`q${i}`).value.trim();
+        if (userAns === q.answer) score += q.score;
+      });
+      resultDiv.innerHTML = `你的得分为：${score} / 150`;
+      clearInterval(timer);
+    }
+
+    function goHome() {
+      window.location.href = "index.html";
+    }
+
+    // 倒计时
+    let totalTime = 600; // 10分钟 = 600秒
+    let timer = setInterval(() => {
+      totalTime--;
+      const min = Math.floor(totalTime / 60);
+      const sec = totalTime % 60;
+      timeDisplay.textContent = `${min}:${sec.toString().padStart(2, "0")}`;
+      if (totalTime <= 0) {
+        clearInterval(timer);
+        alert("时间到！系统已自动提交。");
+        submitQuiz();
+      }
+    }, 1000);
+
+    loadQuiz();
+  </script>
+</body>
+</html>
