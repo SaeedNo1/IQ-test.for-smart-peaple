@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>生物挑战题</title>
+  <style>
+    body {
+      font-family: "微软雅黑", sans-serif;
+      background: linear-gradient(to right, #56ab2f, #a8e063);
+      color: #fff;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #ffeb3b;
+    }
+    .question {
+      margin-bottom: 20px;
+      background-color: rgba(0,0,0,0.3);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #fff;
+      color: #000;
+      border: none;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .result {
+      font-size: 20px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #timer {
+      font-size: 18px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <h1>生物挑战题（限时 10 分钟）</h1>
+  <div id="timer">剩余时间：10:00</div>
+  <form id="quizForm"></form>
+  <button onclick="submitQuiz()">提交</button>
+  <button onclick="restart()">重新开始</button>
+  <button onclick="goHome()">返回主页</button>
+  <div class="result" id="result"></div>
+
+  <script>
+    const questions = [
+      { q: "植物进行光合作用需要哪三种基本原料？", a: "水、二氧化碳、阳光", score: 15 },
+      { q: "人体最大的器官是？", a: "皮肤", score: 10 },
+      { q: "人类的染色体共有多少对？", a: "23", score: 15 },
+      { q: "绿色植物制造有机物的主要器官是？", a: "叶", score: 10 },
+      { q: "下列哪种生物属于原核生物：细菌、真菌、病毒？", a: "细菌", score: 15 },
+      { q: "植物的蒸腾作用主要通过什么器官完成？", a: "叶片", score: 10 },
+      { q: "血液中负责携带氧气的成分是？", a: "红细胞", score: 15 },
+      { q: "基因位于细胞的哪个结构中？", a: "细胞核", score: 15 },
+      { q: "光合作用的产物是什么？", a: "氧气和有机物", score: 10 },
+      { q: "生态系统包括哪两部分？", a: "生物部分和非生物部分", score: 10 },
+      { q: "遗传的基本单位是什么？", a: "基因", score: 15 },
+      { q: "植物的呼吸作用是在哪个结构中进行的？", a: "线粒体", score: 15 },
+      { q: "人类主要的生殖方式是？", a: "有性生殖", score: 10 },
+      { q: "地球上最早的生命形式是？", a: "原核生物", score: 20 },
+      { q: "下列哪种不属于植物组织？分生组织、保护组织、神经组织", a: "神经组织", score: 10 },
+      { q: "人体有哪五种感觉器官？", a: "眼耳鼻舌皮肤", score: 15 },
+      { q: "酶的本质是什么？", a: "蛋白质", score: 20 },
+      { q: "植物的有性生殖包括哪两个过程？", a: "传粉和受精", score: 10 },
+      { q: "DNA双螺旋结构是谁发现的？", a: "沃森和克里克", score: 20 },
+      { q: "光合作用中吸收光能的色素是？", a: "叶绿素", score: 10 },
+      { q: "病毒是否具有细胞结构？", a: "没有", score: 10 },
+      { q: "哺乳动物的特征包括？", a: "胎生、有乳腺、有毛发", score: 20 },
+      { q: "昆虫的身体分为哪三部分？", a: "头、胸、腹", score: 10 },
+      { q: "肺是哪个系统的一部分？", a: "呼吸系统", score: 10 },
+      { q: "人类的免疫系统包括哪些组成？", a: "免疫器官、免疫细胞、免疫分子", score: 15 },
+      { q: "能通过胎盘传递给胎儿的免疫物质是？", a: "抗体", score: 15 },
+      { q: "人体内维生素C的缺乏会引发什么病？", a: "坏血病", score: 10 },
+      { q: "绿色植物呼吸作用吸收什么气体？", a: "氧气", score: 10 },
+      { q: "转基因技术主要改变了什么？", a: "生物的遗传物质", score: 15 },
+      { q: "水稻属于单子叶植物还是双子叶植物？", a: "单子叶植物", score: 15 }
+    ];
+
+    const selected = questions.sort(() => 0.5 - Math.random()).slice(0, 10);
+    const quizForm = document.getElementById("quizForm");
+
+    selected.forEach((q, i) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `
+        <p>(${q.score}分) ${i + 1}. ${q.q}</p >
+        <input type="text" name="q${i}">
+      `;
+      quizForm.appendChild(div);
+    });
+
+    function submitQuiz() {
+      let score = 0;
+      selected.forEach((q, i) => {
+        const answer = document.querySelector(`[name=q${i}]`).value.trim();
+        if (answer === q.a) score += q.score;
+      });
+      document.getElementById("result").innerText = `你的得分是：${score} / 150`;
+      clearInterval(timerInterval);
+    }
+
+    function restart() {
+      location.reload();
+    }
+
+    function goHome() {
+      window.location.href = "index.html";
+    }
+
+    let timeLeft = 600;
+    const timer = document.getElementById("timer");
+
+    function updateTimer() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timer.innerText = `剩余时间：${minutes}:${seconds.toString().padStart(2, '0')}`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        alert("时间到！");
+        submitQuiz();
+      }
+      timeLeft--;
+    }
+
+    const timerInterval = setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
