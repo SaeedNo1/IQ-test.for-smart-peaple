@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>思维挑战题</title>
+  <style>
+    body {
+      font-family: "微软雅黑", sans-serif;
+      background: linear-gradient(to right, #373b44, #4286f4);
+      color: #fff;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #ffeb3b;
+    }
+    .question {
+      margin-bottom: 20px;
+      background-color: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #fff;
+      color: #000;
+      border: none;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .result {
+      font-size: 20px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #timer {
+      font-size: 18px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <h1>思维挑战题（限时 10 分钟）</h1>
+  <div id="timer">剩余时间：10:00</div>
+  <form id="quizForm"></form>
+  <button onclick="submitQuiz()">提交</button>
+  <button onclick="restart()">重新开始</button>
+  <button onclick="goHome()">返回主页</button>
+  <div class="result" id="result"></div>
+
+  <script>
+    const questions = [
+      { q: "一个农夫有 17 只羊，全部除了 9 只都跑了，他还有几只羊？", a: "9", score: 15 },
+      { q: "妈妈有四个儿子，东、南、西，第四个儿子叫什么？", a: "北", score: 10 },
+      { q: "一个袋子里有红球5个、蓝球3个、黄球2个。闭眼摸一个球，摸到红球的概率是多少？", a: "0.5", score: 15 },
+      { q: "小明看到一条鱼头朝西游，但鱼是背朝上游的，请问鱼是朝哪边游？", a: "东", score: 10 },
+      { q: "小丽有两个姐姐，一个比她大两岁，一个比她小一岁，她是几岁？", a: "无法确定", score: 20 },
+      { q: "有一个数除以3余2，除以5余4，这个数最小是多少？", a: "14", score: 20 },
+      { q: "你有10根火柴，最多能组成多少个三角形？", a: "3", score: 15 },
+      { q: "一个钟上午 10 点敲了 10 下，用了 9 秒。敲 5 下需要几秒？", a: "4", score: 15 },
+      { q: "有三人分金条，一根不能切，但必须平均分，怎么办？", a: "先借再还", score: 15 },
+      { q: "一只鸡蛋从一米高掉到石头上，为什么没破？", a: "没掉破", score: 10 },
+      { q: "把3根火柴排成3个等边三角形，如何做到？", a: "做成四面体", score: 20 },
+      { q: "一个和尚挑水喝，两个和尚抬水喝，三个和尚...", a: "没水喝", score: 10 },
+      { q: "一辆车逆着风走，司机没开车，车怎么动的？", a: "滑行", score: 10 },
+      { q: "哪种杯子不能装水？", a: "纸上画的杯子", score: 10 },
+      { q: "一个数的三分之一加上 6 等于 15，这个数是多少？", a: "27", score: 15 },
+      { q: "有10个相同的苹果，给3个人分，每人至少1个，分法有多少种？", a: "36", score: 20 },
+      { q: "你口袋里有 3 元，买了 2 元的面包，还剩多少钱？", a: "1", score: 10 },
+      { q: "你只有一次机会，说出一句话让国王无法执行任何惩罚，你会说？", a: "你会杀我", score: 20 },
+      { q: "倒立时，左手和右手的方向关系如何变化？", a: "不变", score: 15 },
+      { q: "一个立方体有几个面？", a: "6", score: 10 },
+      { q: "4个人3小时能挖完一条沟，6个人挖同样的沟需要几小时？", a: "2", score: 10 },
+      { q: "父母共有5个孩子，安一、安二、安三、安四，第五个叫？", a: "安五", score: 10 },
+      { q: "大雁为什么要排成人字形？", a: "省力", score: 10 },
+      { q: "有三个人比赛跑步，谁跑得最慢？", a: "最后一个", score: 10 },
+      { q: "9和6谁大？", a: "9", score: 5 },
+      { q: "一个月最多有几天是星期一？", a: "5", score: 10 },
+      { q: "10个苹果5人分，每人2个，为什么还剩？", a: "不是每人都吃", score: 10 },
+      { q: "1小时的1/3是多少分钟？", a: "20", score: 10 },
+      { q: "一只手表12小时转一圈，时针每小时转多少度？", a: "30", score: 15 },
+      { q: "什么东西越洗越脏？", a: "水", score: 10 },
+      { q: "小红比小明高，小明比小强高，谁最矮？", a: "小强", score: 5 }
+    ];
+
+    const selected = questions.sort(() => 0.5 - Math.random()).slice(0, 10);
+    const quizForm = document.getElementById("quizForm");
+
+    selected.forEach((q, i) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `
+        <p>(${q.score}分) ${i + 1}. ${q.q}</p >
+        <input type="text" name="q${i}">
+      `;
+      quizForm.appendChild(div);
+    });
+
+    function submitQuiz() {
+      let score = 0;
+      selected.forEach((q, i) => {
+        const answer = document.querySelector(`[name=q${i}]`).value.trim();
+        if (answer === q.a) score += q.score;
+      });
+      document.getElementById("result").innerText = `你的得分是：${score} / 150`;
+      clearInterval(timerInterval);
+    }
+
+    function restart() {
+      location.reload();
+    }
+
+    function goHome() {
+      window.location.href = "index.html";
+    }
+
+    let timeLeft = 600;
+    const timer = document.getElementById("timer");
+
+    function updateTimer() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timer.innerText = `剩余时间：${minutes}:${seconds.toString().padStart(2, '0')}`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        alert("时间到！");
+        submitQuiz();
+      }
+      timeLeft--;
+    }
+
+    const timerInterval = setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
