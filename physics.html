@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>物理挑战题</title>
+  <style>
+    body {
+      font-family: "微软雅黑", sans-serif;
+      background: linear-gradient(to right, #2193b0, #6dd5ed);
+      color: #fff;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #ffeb3b;
+    }
+    .question {
+      margin-bottom: 20px;
+      background-color: rgba(0,0,0,0.3);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #fff;
+      color: #000;
+      border: none;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .result {
+      font-size: 20px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #timer {
+      font-size: 18px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <h1>物理挑战题（限时 10 分钟）</h1>
+  <div id="timer">剩余时间：10:00</div>
+  <form id="quizForm"></form>
+  <button onclick="submitQuiz()">提交</button>
+  <button onclick="restart()">重新开始</button>
+  <button onclick="goHome()">返回主页</button>
+  <div class="result" id="result"></div>
+
+  <script>
+    const questions = [
+      { q: "水的沸点是多少摄氏度？", a: "100", score: 10 },
+      { q: "声音在空气中的传播速度约是多少米/秒？", a: "340", score: 15 },
+      { q: "力的单位是什么？", a: "牛顿", score: 10 },
+      { q: "牛顿第一定律又称为什么？", a: "惯性定律", score: 15 },
+      { q: "地球的重力加速度大约是多少？", a: "9.8", score: 10 },
+      { q: "一个物体受到平衡力作用会发生什么？", a: "保持静止或匀速直线运动", score: 20 },
+      { q: "电流的单位是什么？", a: "安培", score: 10 },
+      { q: "电压和电流的关系由哪条定律描述？", a: "欧姆定律", score: 15 },
+      { q: "声音是如何传播的？", a: "通过介质振动", score: 15 },
+      { q: "摩擦力是总是阻碍物体运动的力，对吗？", a: "对", score: 10 },
+      { q: "光在真空中的速度是多少？", a: "3×10^8", score: 20 },
+      { q: "电功率的单位是什么？", a: "瓦特", score: 10 },
+      { q: "凸透镜的焦距是正还是负？", a: "正", score: 15 },
+      { q: "电路中电流只流一个方向的叫？", a: "直流电", score: 15 },
+      { q: "两个磁极相同会怎样？", a: "相互排斥", score: 10 },
+      { q: "电能可以转化为什么能？", a: "光能、热能、动能等", score: 20 },
+      { q: "杠杆原理的条件是？", a: "力臂×力=阻力臂×阻力", score: 20 },
+      { q: "太阳的主要能量来源是？", a: "核聚变", score: 20 },
+      { q: "气压计是用来测量什么的？", a: "大气压强", score: 10 },
+      { q: "热传导的三种方式是？", a: "传导、对流、辐射", score: 20 },
+      { q: "运动物体的速度单位是？", a: "米每秒", score: 10 },
+      { q: "压强的计算公式是？", a: "压强=压力/面积", score: 15 },
+      { q: "浮力的大小跟什么有关？", a: "排开液体的重量", score: 20 },
+      { q: "滑轮组能省力吗？", a: "能", score: 10 },
+      { q: "电荷有哪两种类型？", a: "正电荷和负电荷", score: 10 },
+      { q: "金属导电是因为内部有？", a: "自由电子", score: 15 },
+      { q: "磁场中磁感线的方向由哪里到哪里？", a: "北极到南极", score: 15 },
+      { q: "声音传播需要什么条件？", a: "介质", score: 10 },
+      { q: "地球自转一圈大约多久？", a: "24小时", score: 10 },
+      { q: "什么叫惯性？", a: "物体保持原有运动状态的性质", score: 15 }
+    ];
+
+    const selected = questions.sort(() => 0.5 - Math.random()).slice(0, 10);
+    const quizForm = document.getElementById("quizForm");
+
+    selected.forEach((q, i) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `
+        <p>(${q.score}分) ${i + 1}. ${q.q}</p >
+        <input type="text" name="q${i}">
+      `;
+      quizForm.appendChild(div);
+    });
+
+    function submitQuiz() {
+      let score = 0;
+      selected.forEach((q, i) => {
+        const answer = document.querySelector(`[name=q${i}]`).value.trim();
+        if (answer === q.a) score += q.score;
+      });
+      document.getElementById("result").innerText = `你的得分是：${score} / 150`;
+      clearInterval(timerInterval);
+    }
+
+    function restart() {
+      location.reload();
+    }
+
+    function goHome() {
+      window.location.href = "index.html";
+    }
+
+    // 倒计时
+    let timeLeft = 600;
+    const timer = document.getElementById("timer");
+
+    function updateTimer() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timer.innerText = `剩余时间：${minutes}:${seconds.toString().padStart(2, '0')}`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        alert("时间到！");
+        submitQuiz();
+      }
+      timeLeft--;
+    }
+
+    const timerInterval = setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
