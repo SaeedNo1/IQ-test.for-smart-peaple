@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>多学科思维挑战平台</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "微软雅黑", sans-serif;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 1s ease-in-out;
+    }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    .btn-group button {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #ffffff;
+      color: #333;
+      transition: transform 0.2s, background-color 0.3s;
+    }
+    .btn-group button:hover {
+      transform: scale(1.05);
+      background-color: #e0e0e0;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>欢迎来到多学科思维挑战</h1>
+    <p>每次随机抽取10题，难度不等，限时10分钟，满分150分。</p >
+    <div class="btn-group">
+      <button onclick="goTo('thinking.html')">思维挑战题</button>
+      <button onclick="goTo('math.html')">数学挑战题</button>
+      <button onclick="goTo('physics.html')">物理挑战题</button>
+      <button onclick="goTo('biology.html')">生物挑战题</button>
+    </div>
+  </div>
+
+  <script>
+    function goTo(page) {
+      window.location.href = page;
+    }
+  </script>
+</body>
+</html>
