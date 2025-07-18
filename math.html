@@ -124,7 +124,19 @@
       { q: "29. -1的3次方是？", answer: "-1", score: 10 },
       { q: "30. 角度60°是多少弧度？", answer: "π/3", score: 20 }
     ];
+ // 随机选10题
+    const selected = questions.sort(() => Math.random() - 0.5).slice(0, 10);
 
+    const form = document.getElementById("quizForm");
+    selected.forEach((item, i) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `<strong>题目 ${i + 1}（${item.score}分）:</strong><br>${item.q}<br>`;
+      item.options.forEach((opt, j) => {
+        div.innerHTML += `<label><input type="radio" name="q${i}" value="${j}"> ${opt}</label><br>`;
+      });
+      form.appendChild(div);
+    });
     const quizForm = document.getElementById("quizForm");
     const resultDiv = document.getElementById("result");
     const timeDisplay = document.getElementById("time");
@@ -167,7 +179,6 @@
       window.location.href = "index.html";
     }
 
-    // 倒计时
     let totalTime = 600; // 10分钟 = 600秒
     let timer = setInterval(() => {
       totalTime--;
